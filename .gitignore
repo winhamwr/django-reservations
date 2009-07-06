@@ -1,6 +1,1 @@
-virtual-env/*
-dist/*
-build/*
-docs/build/doctrees/*
-src/django-reservation.egg-info/*
 *.pyc
