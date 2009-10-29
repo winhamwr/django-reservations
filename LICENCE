@@ -1,4 +1,4 @@
-Simple registration management for arbitrary events
+Simple RSVP system for django-schedule
 
 Copyright (c) 2009, Wes Winham
 All rights reserved.
