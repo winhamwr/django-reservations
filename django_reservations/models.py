@@ -44,4 +44,4 @@ class EventReservations(models.Model):
 
         return True
 
-admin.site.register(EventRegistration)
+admin.site.register(EventReservations)
