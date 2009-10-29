@@ -12,6 +12,7 @@ from schedule.models import Occurrence
 from schedule.views import get_occurrence
 
 from django_reservations.models import EventReservations
+from django_reservations.forms import RsvpForm
 
 @login_required
 def reservations(request, occurrence_id,
@@ -26,9 +27,10 @@ def reservations(request, occurrence_id,
         er = EventReservations(occurrence=occurrence)
         er.save()
 
-    rsvpers = rs.reservations.all().order_by('last_name')
+    rsvpers = er.reservations.all().order_by('last_name')
 
     context = RequestContext(request, {'occurrence': occurrence,
+                                       'er': er,
                                        'rsvpers': rsvpers})
 
     return render_to_response(template_name, context)
@@ -66,10 +68,14 @@ def rsvp(request, occurrence_id, template_name='django_reservations/rsvp.html'):
     """
     occurrence = get_object_or_404(Occurrence, pk=occurrence_id)
 
-    result_msg = ''
+    try:
+        er = occurrence.eventreservations
+        reserved = er.user_reserved(request.user)
+    except EventReservations.DoesNotExist:
+        reserved = False
 
     if request.method == "POST":
-        form = RsvpForm(data=request.POST)
+        form = RsvpForm(data=request.POST, instance=occurrence)
         if form.is_valid():
             occurrence = form.save()
             if form.cleaned_data['attending']:
@@ -77,22 +83,18 @@ def rsvp(request, occurrence_id, template_name='django_reservations/rsvp.html'):
             else:
                 try:
                     er = occurrence.eventreservations
-                    er.remove(request.user)
+                    er.reservations.remove(request.user)
                 except EventReservations.DoesNotExist:
                     pass # no reservations exist, no need to remove anything
 
             return HttpResponseRedirect(reverse(
-                'reservations_rsvp', kwargs={'occurrence_id':occurrence.pk}))
+                'reservations_reservations_view', kwargs={'occurrence_id':occurrence.pk}))
     else:
-        form = RsvpForm(request)
+        form = RsvpForm(initial={'attending':reserved}, instance=occurrence)
 
-    try:
-        er = occurrence.eventreservations
-        reserved = er.user_reserved(request.user)
-    except EventReservations.DoesNotExist:
-        reserved = False
 
-    context = RequestContext(request, {'form':form, 'reserved':reserved})
+
+    context = RequestContext(request, {'form':form, 'occurrence':occurrence, 'reserved':reserved})
 
     return render_to_response(template_name, context)
 

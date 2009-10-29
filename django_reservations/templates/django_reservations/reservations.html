@@ -1,0 +1,31 @@
+{% load i18n %}
+
+<h2 align="center">RSVPs for {{ occurrence.title }}</h2>
+{% if occurrence.description %}
+<p><strong>{{occurrence.description}}</strong></p>
+{% endif %}
+<p><em>{% blocktrans with occurrence.start|date:_("DATETIME_FORMAT") as start_date %}{{ start_date }}{% endblocktrans %}</em> <strong>through</strong> <em>{% blocktrans with occurrence.end|date:_("DATETIME_FORMAT") as end_date %}{{ end_date }}{% endblocktrans %}</em></p>
+
+{% if user.is_authenticated %}
+<div id="user_rsvp_status"></div>
+{% endif %}
+
+<h3>RSVPers: {% if er.has_limit %}(max: <strong>{{ er.reservation_limit }}</strong>){% endif%} </h3>
+    <ul>
+    {% for rsvper in rsvpers %}
+        <li>{{ rsvper.last_name|default:rsvper }}, {{ rsvper.first_name }}</li>
+    {% endfor %}
+    </ul>
+{% if perms.django_reservations.change_eventregistrations %}
+<a href="{% url admin:django_reservations_eventreservations_change occurrence.eventreservations.pk %}">Modify RSVP List</a>
+{% endif %}
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#user_rsvp_status').load('{% url reservations_rsvp occurrence_id=occurrence.pk %}');
+        $('#rsvp').click(function() {
+            $(this).parent().parent().load($(this).attr('target'));
+            return false;
+        });
+    });
+</script>

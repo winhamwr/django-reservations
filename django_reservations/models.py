@@ -11,12 +11,12 @@ class EventReservations(models.Model):
     """
     occurrence = models.OneToOneField(Occurrence)
     reservation_limit = models.IntegerField(default=0) # 0 is no limit
-    reservations = models.ManyToManyField(User)
+    reservations = models.ManyToManyField(User, blank=True)
 
 
     class Meta:
-        verbose_name = _('reservation setting')
-        verbose_name_plural = _('reservation settings')
+        verbose_name = _('Event Reservation')
+        verbose_name_plural = _('Event Reservations')
 
     def __unicode__(self):
         return "reservation settings for %s" % self.occurrence
@@ -25,11 +25,14 @@ class EventReservations(models.Model):
         """
         Determine whether a user has confirmed yes for this occurrence.
         """
-        count = self.reservations.filter(user=user).count()
+        count = self.reservations.filter(pk=user.pk).count()
         if count > 0:
             return True
         else:
             return False
+
+    def has_limit(self):
+        return self.reservation_limit != 0
 
     def can_rsvp(self):
         """

@@ -5,7 +5,7 @@ from schedule.models import Occurrence
 from django_reservations.models import EventReservations
 
 class RsvpForm(forms.ModelForm):
-    attending = forms.BooleanField(default=True, required=False)
+    attending = forms.BooleanField(initial=True, required=False)
 
     def clean(self):
         data = self.cleaned_data
@@ -19,6 +19,7 @@ class RsvpForm(forms.ModelForm):
 
                 if not er.can_rsvp():
                     raise forms.ValidationError("RSVP limit reached. This event is full")
+        return data
 
     class Meta:
         model = Occurrence

@@ -1,0 +1,23 @@
+{% load uni_form %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.form.js"></script>
+<p>{% if reserved %}You are attending{% else %}You are NOT attending{% endif %}</p>
+<form id="rsvp_form" class="rsvp uniForm" method="POST" action="{% url reservations_rsvp occurrence_id=occurrence.pk %}">
+    <fieldset class="inlineLabels">
+        {{ form|as_uni_form }}
+        <div class="form_block">
+            <input type="submit" value="Update RSVP Status" />
+        </div>
+    </fieldset>
+</form>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+		$('#rsvp_form').ajaxForm({
+            target: '.event_dialog',
+            success: function() {
+                $('.event_dialog').dialog('option', 'title', 'RSVP')
+				$('.event_dialog').dialog("open");
+            }
+        });
+    });
+</script>

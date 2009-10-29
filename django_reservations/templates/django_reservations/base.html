@@ -1,0 +1,9 @@
+{% extends "site_base.html" %}
+
+{% block rtab_id %}id="reservations_tab"{% endblock %}
+
+{% block subnav %}
+<ul>
+    <li><a href="{% url reservations_reservations_mine %}">Your RSVPs</a></li>
+</ul>
+{% endblock %}
