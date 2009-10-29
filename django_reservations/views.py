@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import permission_required, login_required
 
-from schedule.models import Occurrence
+from schedule.models import Occurrence, Calendar
 from schedule.views import get_occurrence
 
 from django_reservations.models import EventReservations
@@ -36,7 +36,7 @@ def reservations(request, occurrence_id,
     return render_to_response(template_name, context)
 
 @login_required
-def user_reservations(request, user_id=None, template_name='django_reservation/user_reservations.html'):
+def user_reservations(request, user_id=None, template_name='django_reservations/user_reservations.html'):
     """
     A reservation report for a specific user. Displays their reservation status
     for all RSVP-enabled occurrences in the future.
@@ -49,7 +49,7 @@ def user_reservations(request, user_id=None, template_name='django_reservation/u
     # 2-tuple of (calendar, [occurrences])
     cal_data = []
     for calendar in Calendar.objects.all():
-        rsvped_occurrences = Occurrence.objects.filter(eventreservations__reservations=user, start__gt=datetime.datetime.now()).order_by('start')
+        rsvped_occurrences = Occurrence.objects.filter(event__calendar=calendar, eventreservations__reservations=user, start__gt=datetime.datetime.now()).order_by('start')
         cal_data.append((calendar, rsvped_occurrences))
 
     context = RequestContext(request, dict(
