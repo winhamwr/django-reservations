@@ -16,7 +16,7 @@
         <li>{{ rsvper.last_name|default:rsvper }}, {{ rsvper.first_name }}</li>
     {% endfor %}
     </ul>
-{% if perms.django_reservations.change_eventregistrations %}
+{% if perms.django_reservations.change_eventreservations %}
 <a href="{% url admin:django_reservations_eventreservations_change occurrence.eventreservations.pk %}">Modify RSVP List</a>
 {% endif %}
 
