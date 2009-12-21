@@ -1,5 +1,5 @@
 {% load uni_form %}
-<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.form.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.form.js"></script>
 <p>{% if reserved %}You are attending{% else %}You are NOT attending{% endif %}</p>
 <form id="rsvp_form" class="rsvp uniForm" method="POST" action="{% url reservations_rsvp occurrence_id=occurrence.pk %}">
     <fieldset class="inlineLabels">
